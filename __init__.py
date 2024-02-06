@@ -6,9 +6,7 @@ import sqlite3
                                                                                                                                        
 app = Flask(__name__)                                                                                                                  
                                                                                                                                        
-@app.route("/histogramme/")
-def mongraphique():
-    return render_template("histogramme.html")
+
 
 @app.route("/fr/")
 def monfr():
@@ -26,7 +24,9 @@ def meteo():
         results.append({'Jour': dt_value, 'temp': temp_day_value})
     return jsonify(results=results)
 
-
+@app.route("/histogramme/")
+def mongraphique():
+    return render_template("histogramme.html")
 
 
                                                                                                                                        
