@@ -21,13 +21,12 @@
       dataTable.addRow([date.toLocaleDateString(), entry.temp]);
     });
 
-    // Configurer les options du graphique en ligne
+    // Configurer les options du graphique en histogramme
     var options = {
       title: 'Évolution des températures de Paris pour les 16 prochains jours',
-      curveType: 'function',
-      legend: { position: 'bottom' }
+      legend: { position: 'none' }
     };
-    var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+    var chart = new google.visualization.Histogram(document.getElementById('chart_div'));
     chart.draw(dataTable, options);
   }
   // Récupération de données depuis notre API /paris/
