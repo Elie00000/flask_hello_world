@@ -24,7 +24,8 @@
     // Configurer les options du graphique en histogramme
     var options = {
       title: 'Évolution des températures de Paris pour les 16 prochains jours',
-      legend: { position: 'none' }
+      legend: { position: 'right' },
+      histogram: { bucketSize: 2 } // Augmenter la précision de l'histogramme
     };
     var chart = new google.visualization.Histogram(document.getElementById('chart_div'));
     chart.draw(dataTable, options);
