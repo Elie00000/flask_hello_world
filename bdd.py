@@ -1,4 +1,4 @@
-leimport sqlite3
+import sqlite3
 from werkzeug.security import generate_password_hash
 
 def create_user_db():
