@@ -1,11 +1,10 @@
 from flask import Flask, render_template_string, render_template, jsonify, json
 from urllib.request import urlopen
 import sqlite3
-from flask_login import LoginManager, UserMixin, login_required
-from werkzeug.security import check_password_hash, generate_password_hash
-import bdd.py  # Importer votre module bdd
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'votre_clé_secrète_ici'
 login_manager = LoginManager()
 login_manager.init_app(app)
 
@@ -13,35 +12,33 @@ class User(UserMixin):
     pass
 
 @login_manager.user_loader
-def user_loader(email):
-    conn = sqlite3.connect('user.db')
-    c = conn.cursor()
-    c.execute("SELECT * FROM users WHERE email=?", (email,))
-    user_db = c.fetchone()
-    if user_db is None:
+def user_loader(username):
+    if username not in users:
         return
     user = User()
-    user.id = email
+    user.id = username
     return user
 
-@app.route("/fr/")
-@login_required
-def monfr():
-    return "<h2>Bonjour tout le monde !</h2>"
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    # Ici, vous devriez vérifier les identifiants de l'utilisateur
+    # Si ils sont corrects, vous pouvez connecter l'utilisateur
+    username = request.form['username']
+    user = User()
+    user.id = username
+    login_user(user)
+    return redirect(url_for('protected'))
 
-@app.route('/paris/')
+@app.route('/protected')
 @login_required
-def meteo():
-    response = urlopen('https://api.openweathermap.org/data/2.5/forecast/daily?q=Paris,fr&cnt=16&appid=bd5e378503939ddaee76f12ad7a97608')
-    raw_content = response.read()
-    json_content = json.loads(raw_content.decode('utf-8'))
-    results = []
-    for list_element in json_content.get('list', []):
-        dt_value = list_element.get('dt')
-        temp_day_value = list_element.get('temp', {}).get('day') - 273.15 # Conversion de Kelvin en °c 
-        results.append({'Jour': dt_value, 'temp': temp_day_value})
-    return jsonify(results=results)
+def protected():
+    return 'Connecté !'
 
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return 'Déconnecté !'
 @app.route("/histogramme/")
 @login_required
 def mongraphique():
