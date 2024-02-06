@@ -3,16 +3,35 @@ from flask import render_template
 from flask import json
 from urllib.request import urlopen
 import sqlite3
-                                                                                                                                       
-app = Flask(__name__)                                                                                                                  
-                                                                                                                                       
+from flask_login import LoginManager, UserMixin, login_required
+from werkzeug.security import check_password_hash, generate_password_hash
 
+app = Flask(__name__)
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+class User(UserMixin):
+    pass
+
+@login_manager.user_loader
+def user_loader(email):
+    conn = sqlite3.connect('user.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM users WHERE email=?", (email,))
+    user_db = c.fetchone()
+    if user_db is None:
+        return
+    user = User()
+    user.id = email
+    return user
 
 @app.route("/fr/")
+@login_required
 def monfr():
     return "<h2>Bonjour tout le monde !</h2>"
 
 @app.route('/paris/')
+@login_required
 def meteo():
     response = urlopen('https://api.openweathermap.org/data/2.5/forecast/daily?q=Paris,fr&cnt=16&appid=bd5e378503939ddaee76f12ad7a97608')
     raw_content = response.read()
@@ -25,10 +44,9 @@ def meteo():
     return jsonify(results=results)
 
 @app.route("/histogramme/")
+@login_required
 def mongraphique():
     return render_template("histogramme.html")
 
-
-                                                                                                                                       
 if __name__ == "__main__":
   app.run(debug=True)
