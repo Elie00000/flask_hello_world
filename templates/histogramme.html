@@ -1,48 +1,50 @@
-
+<!DOCTYPE html>
 <html>
   <head>
     <meta charset="UTF-8" />
     <title>Températures à Paris</title>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <style>
+      #chart_div {
+        width: 100%;
+        height: 100vh;
+      }
+    </style>
   </head>  
 
   <body>
-    <div id="chart_div" style="width: 800px; height: 600px;"></div>
+    <div id="chart_div"></div>
     <script>
       google.charts.load('current', { packages: ['corechart'] });
       google.charts.setOnLoadCallback(drawChart);
 
-      function drawChart() {
-        fetch('/paris/')  // Remplacer '/paris/' par l'URL de votre API
-          .then(response => response.json())
-          .then(data => {
-            var dataTable = new google.visualization.DataTable();
-            dataTable.addColumn('string', 'Date');
-            dataTable.addColumn('number', 'Température');
+      async function drawChart() {
+        try {
+          const response = await fetch('/paris/');
+          const data = await response.json();
 
-            data.results.forEach(entry => {
-              var date = new Date(entry.Jour * 1000);
-              dataTable.addRow([date.toLocaleDateString(), entry.temp]);
-            });
+          const dataTable = new google.visualization.DataTable();
+          dataTable.addColumn('string', 'Date');
+          dataTable.addColumn('number', 'Température');
 
-            var options = {
-              title: 'Évolution des températures de Paris pour les 16 prochains jours',
-              curveType: 'function',
-              legend: { position: 'bottom' },
-              hAxis: {
-                title: 'Date',
-              },
-              vAxis: {
-                title: 'Température (°C)'
-              }
-            };
-
-            var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
-            chart.draw(dataTable, options);
-          })
-          .catch(error => {
-            console.error('Erreur lors de la récupération des données:', error);
+          data.results.forEach(entry => {
+            const date = new Date(entry.Jour * 1000);
+            dataTable.addRow([date.toLocaleDateString(), entry.temp]);
           });
+
+          const options = {
+            title: 'Évolution des températures de Paris pour les 16 prochains jours',
+            curveType: 'function',
+            legend: { position: 'bottom' },
+            hAxis: { title: 'Date' },
+            vAxis: { title: 'Température (°C)' }
+          };
+
+          const chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+          chart.draw(dataTable, options);
+        } catch (error) {
+          console.error('Erreur lors de la récupération des données:', error);
+        }
       }
     </script>
   </body>
