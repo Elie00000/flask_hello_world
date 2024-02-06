@@ -1,4 +1,4 @@
-import sqlite3
+leimport sqlite3
 from werkzeug.security import generate_password_hash
 
 def create_user_db():
@@ -10,8 +10,8 @@ def create_user_db():
                  (email text primary key, password text)''')
 
     # Insérer un utilisateur
-    hashed_password = generate_password_hash('testexemple', method='sha256')
-    c.execute("INSERT INTO users VALUES ('exemple@gmail.com', ?)", (hashed_password,))
+    hashed_password = generate_password_hash('Islande-2404', method='sha256')
+    c.execute("INSERT INTO users VALUES ('emile.alberici.snir@gmail.com', ?)", (hashed_password,))
 
     # Enregistrer (commit) les modifications
     conn.commit()
