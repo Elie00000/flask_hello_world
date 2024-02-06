@@ -5,6 +5,7 @@ from urllib.request import urlopen
 import sqlite3
 from flask_login import LoginManager, UserMixin, login_required
 from werkzeug.security import check_password_hash, generate_password_hash
+import bdd  # Importer votre module bdd
 
 app = Flask(__name__)
 login_manager = LoginManager()
